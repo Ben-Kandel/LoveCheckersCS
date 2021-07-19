@@ -1,0 +1,58 @@
+﻿using System;
+using Love;
+using LoveCheckers.Models;
+using LoveCheckers.Views;
+using LoveCheckers.Controllers;
+
+namespace LoveCheckers
+{
+    class Program : Scene
+    {
+        private static Game TheGame;
+
+        static void Main(string[] args)
+        {
+            BootConfig config = new BootConfig
+            {
+                WindowWidth = 750,
+                WindowHeight = 750,
+                WindowCentered = true,
+                WindowTitle = "Yep This Works!"
+            };
+            TheGame = new Game();
+            Boot.Init(config);
+            Boot.Run(new Program());
+        }
+        
+        /*
+            ---------------------------------------------------------------------------------------------------------
+            These are the callbacks provided by Love2D.
+            We will use them to call the appropriate functions in our views and controllers. 
+            ---------------------------------------------------------------------------------------------------------
+        */
+        
+        public override void Draw()
+        {
+            Graphics.SetBackgroundColor(70f / 255, 70f / 255, 70f / 255);
+            TheGame.Draw();
+        }
+
+        public override void MousePressed(float x, float y, int button, bool isTouch)
+        {
+            // cast the floats to ints now just to get it out of the way
+            TheGame.MousePressed((int)x, (int)y, button, isTouch);
+        }
+
+        public override void MouseMoved(float x, float y, float dx, float dy, bool isTouch)
+        {
+            // cast the floats to ints now just to get it out of the way
+            // TheGame.MouseMoved((int)x, (int)y, (int)dx, (int)dy, isTouch);
+            // GController.MouseMoved((int)x, (int)y, (int)dx, (int)dy, isTouch);
+        }
+
+        public override void Update(float dt)
+        {
+            TheGame.Update(dt);
+        }
+    }
+}
