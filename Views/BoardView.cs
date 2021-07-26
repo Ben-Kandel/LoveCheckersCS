@@ -9,15 +9,19 @@ namespace LoveCheckers.Views
     {
         
         private Board Board;
-        private int PieceRadius;
 
         private static Color DefaultHighlight = new Color(181f / 255, 179f / 255, 147f/ 255, 1);
         private static Color MoveHighlight = new Color(0, 0.7f, 0.3f, 1);
 
+        private static Image BlackPawn = Graphics.NewImage("../../../Images/black_pawn.png");
+        private static Image BlackKing = Graphics.NewImage("../../../Images/black_king.png");
+        private static Image RedPawn = Graphics.NewImage("../../../Images/red_pawn.png");
+        private static Image RedKing = Graphics.NewImage("../../../Images/red_king.png");
+        private const int ImageSize = 64; // I know the images are 64x64 pixels
+
         public BoardView(Board b)
         {
             Board = b;
-            PieceRadius = Board.TileSize / 2 - 5; // this seems to work fine
         }
 
         public void Draw()
@@ -34,20 +38,10 @@ namespace LoveCheckers.Views
                     Graphics.Rectangle(DrawMode.Line, drawX, drawY, Board.TileSize, Board.TileSize);
                     
                     // draw the piece on the square
-                    // TODO: Download some checker piece images and draw those instead of boring circles.
                     int piece = Board.Grid[x, y];
                     if (Piece.IsNothing(piece)) { continue; } // if there is no piece, skip over the rest of the code
-                    if (Piece.IsRed(piece))
-                    {
-                        Graphics.SetColor(1, 0, 0); // red
-                    }
-                    else
-                    {
-                        Graphics.SetColor(0, 0, 0); // black
-                    }
-
-                    DrawMode mode = (Piece.GetType(piece) == Piece.Pawn) ? DrawMode.Fill : DrawMode.Line;
-                    Graphics.Circle(mode, drawX + (Board.TileSize / 2), drawY + (Board.TileSize / 2), PieceRadius);
+                    const int offset = (Board.TileSize - ImageSize) / 2;
+                    Graphics.Draw(PieceToImage(piece), drawX + offset, drawY + offset);
                 }
             }
             DrawMoveHighlights();
@@ -80,6 +74,19 @@ namespace LoveCheckers.Views
            {
                DrawHighlight(move.Destination, MoveHighlight);
            }
+       }
+
+       private static Image PieceToImage(int piece)
+       {
+           // a different syntax for switch
+           return piece switch
+           {
+               Piece.Black | Piece.Pawn => BlackPawn,
+               Piece.Black | Piece.King => BlackKing,
+               Piece.Red | Piece.Pawn => RedPawn,
+               Piece.Red | Piece.King => RedKing,
+               _ => BlackPawn // return the BlackPawn image as the default one if we don't recognize the piece
+           };
        }
     }
 }
