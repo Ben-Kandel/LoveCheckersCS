@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using LoveCheckers.Commands;
-using LoveCheckers.Controllers;
 using LoveCheckers.Views;
 
 namespace LoveCheckers.Models
@@ -9,7 +8,6 @@ namespace LoveCheckers.Models
     {
         public Board Board { get; }
         private BoardView BView;
-        private BoardController BController;
         private GameView GameView;
 
         private Player Player1;
@@ -23,7 +21,6 @@ namespace LoveCheckers.Models
         {
             Board = new Board();
             BView = new BoardView(Board);
-            BController = new BoardController(Board);
             GameView = new GameView(this);
             Player1 = new HumanPlayer(Piece.Red, Board);
             Player2 = new HumanPlayer(Piece.Black, Board);
@@ -45,10 +42,6 @@ namespace LoveCheckers.Models
         {
             BView.Draw();
             GameView.Draw();
-        }
-        public void MousePressed(int x, int y, int button, bool isTouch)
-        {
-            BController.MousePressed(x, y, button, isTouch);
         }
 
         public void Update(float dt)

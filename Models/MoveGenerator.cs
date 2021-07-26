@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace LoveCheckers.Models
@@ -74,56 +72,27 @@ namespace LoveCheckers.Models
         private void GenerateValidMoves()
         {
             ValidMoves.Clear(); // clear out previous moves just in case
-            if (Piece.GetType(SelectedPiece) == Piece.King) // kings can move in all directions
+            Direction[] dirs = {Direction.NorthEast, Direction.NorthWest, Direction.SouthEast, Direction.SouthWest};
+            if (Piece.GetType(SelectedPiece) == Piece.King)
             {
-                GenerateUpMoves();
-                GenerateDownMoves();
+                GenerateMovesInDirs(dirs);
+            }else if (Piece.GetColor(SelectedPiece) == Piece.Red)
+            {
+                GenerateMovesInDirs(dirs.Take(2)); // the first two directions, northeast and northwest
             }
             else
             {
-                if (Piece.GetColor(SelectedPiece) == Piece.Red)
-                {
-                    GenerateUpMoves();
-                }
-                else
-                {
-                    GenerateDownMoves();
-                }                
+                GenerateMovesInDirs(dirs.Skip(2)); // the last two directions, southeast and southwest
             }
             ForceJumpMoves(); // if there is a jump move, remove all the other ones
             Board.UpdateHighlightedMoves(ValidMoves); // tell the board so it can draw the highlights for the moves
         }
-        
-        // TODO: refactor GenerateUpMoves() and GenerateDownMoves() into one function. It's not a huge deal, but I don't like repeating myself
-        private void GenerateUpMoves()
-        {
-            Direction[] dirs = {Direction.NorthEast, Direction.NorthWest};
-            for (int i = 0; i < 2; i++)
-            {
-                Point next = GoInDir(Start, dirs[i]);
-                if (!Board.IsValidPoint(next)) { continue; } // if it's not a valid point, skip this direction
-                if (!Board.SquareOccupied(next)) // if the square is not occupied, this is a good move
-                {
-                    ValidMoves.Add(new Move(SelectedPiece, Start, next, false));    
-                }else if (Board.SquareOccupiedByEnemy(next, Piece.GetColor(SelectedPiece)))
-                {
-                    // if the square is occupied by the enemy, we check the next point again and see if it is open
-                    Point nextNext = GoInDir(next, dirs[i]);
-                    if (!Board.IsValidPoint(nextNext)) { continue; }
-                    if (!Board.SquareOccupied(nextNext))
-                    {
-                        ValidMoves.Add(new Move(SelectedPiece, Start, nextNext, true, next));
-                    }
-                }
-            }
-        }
 
-        private void GenerateDownMoves()
+        private void GenerateMovesInDirs(IEnumerable<Direction> dirs)
         {
-            Direction[] dirs = {Direction.SouthEast, Direction.SouthWest};
-            for (int i = 0; i < 2; i++)
+            foreach(Direction dir in dirs)
             {
-                Point next = GoInDir(Start, dirs[i]);
+                Point next = GoInDir(Start, dir);
                 if (!Board.IsValidPoint(next)) { continue; } // if it's not a valid point, skip this direction
                 if (!Board.SquareOccupied(next)) // if the square is not occupied, this is a good move
                 {
@@ -131,7 +100,7 @@ namespace LoveCheckers.Models
                 }else if (Board.SquareOccupiedByEnemy(next, Piece.GetColor(SelectedPiece)))
                 {
                     // if the square is occupied by the enemy, we check the next point again and see if it is open
-                    Point nextNext = GoInDir(next, dirs[i]);
+                    Point nextNext = GoInDir(next, dir);
                     if (!Board.IsValidPoint(nextNext)) { continue; }
                     if (!Board.SquareOccupied(nextNext))
                     {

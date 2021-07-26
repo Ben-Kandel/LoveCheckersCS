@@ -1,5 +1,4 @@
-﻿using System;
-using LoveCheckers.Models;
+﻿using LoveCheckers.Models;
 using Love;
 using Point = LoveCheckers.Models.Point;
 

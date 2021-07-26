@@ -1,8 +1,5 @@
-﻿using System;
-using Love;
+﻿using Love;
 using LoveCheckers.Models;
-using LoveCheckers.Views;
-using LoveCheckers.Controllers;
 
 namespace LoveCheckers
 {
@@ -35,12 +32,6 @@ namespace LoveCheckers
         {
             Graphics.SetBackgroundColor(70f / 255, 70f / 255, 70f / 255);
             TheGame.Draw();
-        }
-
-        public override void MousePressed(float x, float y, int button, bool isTouch)
-        {
-            // cast the floats to ints now just to get it out of the way
-            TheGame.MousePressed((int)x, (int)y, button, isTouch);
         }
 
         public override void MouseMoved(float x, float y, float dx, float dy, bool isTouch)
