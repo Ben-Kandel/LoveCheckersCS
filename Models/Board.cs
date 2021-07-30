@@ -115,7 +115,7 @@ namespace LoveCheckers.Models
             return p.X is >= 0 and < 8 && p.Y is >= 0 and < 8;
         }
 
-        public void UpdateHighlightedMoves(List<Move> moves)
+        public void SetHighlightedMoves(List<Move> moves)
         {
             HighlightedMoves = moves;
         }
@@ -129,6 +129,24 @@ namespace LoveCheckers.Models
         {
             int color = Piece.GetColor(piece);
             return (color == Piece.Red && pos.Y == 0) || (color == Piece.Black && pos.Y == 7);
+        }
+
+        // will need this later
+        public List<int> GetPiecesOfColor(int color)
+        {
+            List<int> answer = new List<int>();
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    int piece = Grid[x, y];
+                    if (Piece.GetColor(piece) == color)
+                    {
+                        answer.Add(piece);
+                    }
+                }
+            }
+            return answer;
         }
 
     }

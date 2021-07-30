@@ -26,8 +26,11 @@ namespace LoveCheckers.Commands
             // if the piece can be promoted, do it
             if (Board.CanPromote(Move.Piece, Move.Destination))
             {
-                Board.Grid[Move.Destination.X, Move.Destination.Y] = Piece.GetColor(Move.Piece) | Piece.King;
+                int promotedPiece = Piece.GetColor(Move.Piece) | Piece.King;
+                Board.Grid[Move.Destination.X, Move.Destination.Y] = promotedPiece;
+                Move.Piece = promotedPiece; // the only place where I ever set the Move.Piece field
             }
+            
         }
     }
 }

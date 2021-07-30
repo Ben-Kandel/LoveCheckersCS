@@ -32,5 +32,10 @@
         {
             return !(a == b);
         }
+
+        public override string ToString()
+        {
+            return $"Point {X},{Y}";
+        }
     }
 }

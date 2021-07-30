@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LoveCheckers.Models
@@ -8,7 +9,7 @@ namespace LoveCheckers.Models
         private Board Board;
         private int SelectedPiece;
         private Point Start;
-        private List<Move> ValidMoves;
+        public List<Move> ValidMoves { get; }
         
         public MoveGenerator(Board board, int piece, Point start)
         {
@@ -85,7 +86,7 @@ namespace LoveCheckers.Models
                 GenerateMovesInDirs(dirs.Skip(2)); // the last two directions, southeast and southwest
             }
             ForceJumpMoves(); // if there is a jump move, remove all the other ones
-            Board.UpdateHighlightedMoves(ValidMoves); // tell the board so it can draw the highlights for the moves
+            Board.SetHighlightedMoves(ValidMoves);
         }
 
         private void GenerateMovesInDirs(IEnumerable<Direction> dirs)
@@ -96,7 +97,8 @@ namespace LoveCheckers.Models
                 if (!Board.IsValidPoint(next)) { continue; } // if it's not a valid point, skip this direction
                 if (!Board.SquareOccupied(next)) // if the square is not occupied, this is a good move
                 {
-                    ValidMoves.Add(new Move(SelectedPiece, Start, next, false));    
+                    CreateMove(next, false, null);
+                    // ValidMoves.Add(new Move(SelectedPiece, Start, next, false));    
                 }else if (Board.SquareOccupiedByEnemy(next, Piece.GetColor(SelectedPiece)))
                 {
                     // if the square is occupied by the enemy, we check the next point again and see if it is open
@@ -104,7 +106,8 @@ namespace LoveCheckers.Models
                     if (!Board.IsValidPoint(nextNext)) { continue; }
                     if (!Board.SquareOccupied(nextNext))
                     {
-                        ValidMoves.Add(new Move(SelectedPiece, Start, nextNext, true, next));
+                        CreateMove(nextNext, true, next);
+                        // ValidMoves.Add(new Move(SelectedPiece, Start, nextNext, true, next));
                     }
                 }
             }
@@ -119,7 +122,14 @@ namespace LoveCheckers.Models
                 ValidMoves.RemoveAll(m => !m.IsJump);
             }
         }
-        
+
+        private void CreateMove(Point destination, bool jump, Point captured)
+        {
+            bool promotion = Board.CanPromote(SelectedPiece, destination);
+            Move m = new Move(SelectedPiece, Start, destination, jump, captured, promotion);
+            ValidMoves.Add(m);
+        }
+
 
     }
 }

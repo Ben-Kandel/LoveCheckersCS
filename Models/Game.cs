@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LoveCheckers.Commands;
 using LoveCheckers.Views;
 
@@ -28,7 +29,7 @@ namespace LoveCheckers.Models
             GameHistory = new List<ICommand>();
             HistoryIndex = -1;
             
-            Board.PrintBoard();
+            // Board.PrintBoard();
         }
 
         public void NextTurn()
@@ -51,13 +52,30 @@ namespace LoveCheckers.Models
             if (ActivePlayer.MoveReady)
             {
                 MoveCommand move = ActivePlayer.GetMove();
+                Move theMove = move.Move;
                 ExecuteMove(move);
-                // TODO: How to force jump moves? Is the implementation different for AI and Human Players? How do I do it??
-                if (!ActivePlayer.ForceJump) // this is only temporary, it doesn't have all the functionality I want yet
+                if (theMove.IsPromotion)
                 {
-                    NextTurn();    
+                    Console.WriteLine("hey this was a promotion!");
+                }
+                if ((theMove.IsPromotion || theMove.IsJump) && CheckForNextJump(theMove)) 
+                {
+                    // we need to force this player to take that available jump
+                    Console.WriteLine("There is an available jump for this player.");
+                    ActivePlayer.ForceJump(theMove);
+                }
+                else
+                {
+                    NextTurn(); // continue on    
                 }
             }
+        }
+
+        private bool CheckForNextJump(Move m)
+        {
+            MoveGenerator gen = new MoveGenerator(Board, m.Piece, m.Destination);
+            // Console.WriteLine($"checking for jump at point {m.Destination}");
+            return gen.HasJump();
         }
 
         private void ExecuteMove(ICommand move)
