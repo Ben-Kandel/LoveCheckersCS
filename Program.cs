@@ -1,11 +1,13 @@
 ﻿using Love;
 using LoveCheckers.Models;
+using LoveCheckers.Views;
 
 namespace LoveCheckers
 {
     class Program : Scene
     {
         private static Game TheGame;
+        private static GameView GameView;
 
         static void Main(string[] args)
         {
@@ -17,7 +19,8 @@ namespace LoveCheckers
                 WindowTitle = "Yep This Works!"
             };
             TheGame = new Game();
-            Boot.Init(config);
+            GameView = new GameView(TheGame);
+            Boot.Init(config);;
             Boot.Run(new Program());
         }
         
@@ -32,6 +35,7 @@ namespace LoveCheckers
         {
             Graphics.SetBackgroundColor(70f / 255, 70f / 255, 70f / 255);
             TheGame.Draw();
+            GameView.Draw();
         }
 
         public override void MouseMoved(float x, float y, float dx, float dy, bool isTouch)

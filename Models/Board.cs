@@ -3,9 +3,21 @@ using System.Collections.Generic;
 
 namespace LoveCheckers.Models
 {
+
+    public class Pair<T1, T2>
+    {
+        public T1 First { get; }
+        public T2 Second { get; }
+        
+        public Pair(T1 first, T2 second)
+        {
+            First = first;
+            Second = second;
+        }
+        
+    }
     public class Board : Entity
     {
-
         public int[,] Grid { get; }
         public const int TileSize = 75;
         public List<Move> HighlightedMoves { get; private set; }
@@ -132,9 +144,9 @@ namespace LoveCheckers.Models
         }
 
         // will need this later
-        public List<int> GetPiecesOfColor(int color)
+        public List<Pair<int, Point>> GetPiecesOfColor(int color)
         {
-            List<int> answer = new List<int>();
+            List<Pair<int, Point>> answer = new List<Pair<int, Point>>();
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
@@ -142,7 +154,7 @@ namespace LoveCheckers.Models
                     int piece = Grid[x, y];
                     if (Piece.GetColor(piece) == color)
                     {
-                        answer.Add(piece);
+                        answer.Add(new Pair<int, Point>(piece, new Point(x, y)));
                     }
                 }
             }

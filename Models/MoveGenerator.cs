@@ -10,13 +10,15 @@ namespace LoveCheckers.Models
         private int SelectedPiece;
         private Point Start;
         public List<Move> ValidMoves { get; }
+        private bool Highlight;
         
-        public MoveGenerator(Board board, int piece, Point start)
+        public MoveGenerator(Board board, int piece, Point start, bool highlight = true)
         {
             Board = board;
             SelectedPiece = piece;
             Start = start;
             ValidMoves = new List<Move>();
+            Highlight = highlight;
             GenerateValidMoves();
         }
 
@@ -86,7 +88,10 @@ namespace LoveCheckers.Models
                 GenerateMovesInDirs(dirs.Skip(2)); // the last two directions, southeast and southwest
             }
             ForceJumpMoves(); // if there is a jump move, remove all the other ones
-            Board.SetHighlightedMoves(ValidMoves);
+            if (Highlight)
+            {
+                Board.SetHighlightedMoves(ValidMoves);    
+            }
         }
 
         private void GenerateMovesInDirs(IEnumerable<Direction> dirs)

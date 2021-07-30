@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LoveCheckers.Commands;
 using LoveCheckers.Views;
 
@@ -9,7 +10,6 @@ namespace LoveCheckers.Models
     {
         public Board Board { get; }
         private BoardView BView;
-        private GameView GameView;
 
         private Player Player1;
         private Player Player2;
@@ -22,7 +22,6 @@ namespace LoveCheckers.Models
         {
             Board = new Board();
             BView = new BoardView(Board);
-            GameView = new GameView(this);
             Player1 = new HumanPlayer(Piece.Red, Board);
             Player2 = new HumanPlayer(Piece.Black, Board);
             ActivePlayer = Player1;
@@ -38,15 +37,30 @@ namespace LoveCheckers.Models
             ActivePlayer = (ActivePlayer == Player1) ? Player2 : Player1;
             Board.ClearHighlightedMoves();
         }
+
+        public bool GameOver()
+        {
+            List<Pair<int, Point>> pieces = Board.GetPiecesOfColor(ActivePlayer.Color);
+            // a player loses when they have no available moves (either lost all pieces, or all pieces blocked in)
+            // return false if any of the player's pieces have a move
+            return !pieces.Any(pair =>
+            {
+                MoveGenerator gen = new MoveGenerator(Board, pair.First, pair.Second, false);
+                return gen.HasMoves();
+            });
+        }
         
         public void Draw()
         {
             BView.Draw();
-            GameView.Draw();
         }
 
         public void Update(float dt)
         {
+            if (GameOver())
+            {
+                return; // temporary
+            }
             ActivePlayer.Update(dt);
             // this is where we wait for a player to...play their turn
             if (ActivePlayer.MoveReady)
