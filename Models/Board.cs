@@ -1,75 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LoveCheckers.Models
 {
 
-    public class Pair<T1, T2>
-    {
-        public T1 First { get; }
-        public T2 Second { get; }
-        
-        public Pair(T1 first, T2 second)
-        {
-            First = first;
-            Second = second;
-        }
-        
-    }
+    // public class Pair<T1, T2>
+    // {
+    //     public T1 First { get; }
+    //     public T2 Second { get; }
+    //     
+    //     public Pair(T1 first, T2 second)
+    //     {
+    //         First = first;
+    //         Second = second;
+    //     }
+    //     
+    // }
+    public record Pair(int Piece, Point Pos);
+    
     public class Board : Entity
     {
-        public int[,] Grid { get; }
+        public int[,] Grid { get; private set; }
         public const int TileSize = 75;
         public List<Move> HighlightedMoves { get; private set; }
+        public List<Move> MoreHighlights { get; set; }
+
+        private List<Pair> RedPieces;
+        private List<Pair> BlackPieces;
 
         public Board()
         {
-            Grid = InitializeBoard();
             X = 50;
             Y = 50;
             HighlightedMoves = new List<Move>();
+            MoreHighlights = new List<Move>();
+            RedPieces = new List<Pair>();
+            BlackPieces = new List<Pair>();
+            InitializeBoard();
         }
         
-        private static int[,] InitializeBoard()
+        private void SetUpPiece(int x, int y, int piece)
         {
-            int[,] grid = new int[8, 8];
+            Grid[x, y] = piece;
+            Pair pair = new Pair(piece, new Point(x, y));
+            if (Piece.GetColor(piece) == Piece.Black)
+            {
+                BlackPieces.Add(pair);
+            }
+            else
+            { 
+                RedPieces.Add(pair);
+            }
+        }
+        
+        private void InitializeBoard()
+        {
+            Grid = new int[8, 8];
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    grid[x, y] = Piece.Nothing;
+                    Grid[x, y] = Piece.Nothing;
                 }
             }
 
             // setting up pieces in the starting configuration
             // writing a loop for this is kinda ugly and it's really not hard to just do it manually
-            grid[1, 0] = Piece.Black | Piece.Pawn;
-            grid[3, 0] = Piece.Black | Piece.Pawn;
-            grid[5, 0] = Piece.Black | Piece.Pawn;
-            grid[7, 0] = Piece.Black | Piece.Pawn;
-            grid[0, 1] = Piece.Black | Piece.Pawn;
-            grid[2, 1] = Piece.Black | Piece.Pawn;
-            grid[4, 1] = Piece.Black | Piece.Pawn;
-            grid[6, 1] = Piece.Black | Piece.Pawn;
-            grid[1, 2] = Piece.Black | Piece.Pawn;
-            grid[3, 2] = Piece.Black | Piece.Pawn;
-            grid[5, 2] = Piece.Black | Piece.Pawn;
-            grid[7, 2] = Piece.Black | Piece.Pawn;
+            SetUpPiece(1, 0, Piece.Black | Piece.Pawn);
+            SetUpPiece(3, 0, Piece.Black | Piece.Pawn);
+            SetUpPiece(5, 0, Piece.Black | Piece.Pawn);
+            SetUpPiece(7, 0, Piece.Black | Piece.Pawn);
+            SetUpPiece(0, 1, Piece.Black | Piece.Pawn);
+            SetUpPiece(2, 1, Piece.Black | Piece.Pawn);
+            SetUpPiece(4, 1, Piece.Black | Piece.Pawn);
+            SetUpPiece(6, 1, Piece.Black | Piece.Pawn);
+            SetUpPiece(1, 2, Piece.Black | Piece.Pawn);
+            SetUpPiece(3, 2, Piece.Black | Piece.Pawn);
+            SetUpPiece(5, 2, Piece.Black | Piece.Pawn);
+            SetUpPiece(7, 2, Piece.Black | Piece.Pawn);
 
-            grid[0, 5] = Piece.Red | Piece.Pawn;
-            grid[2, 5] = Piece.Red | Piece.Pawn;
-            grid[4, 5] = Piece.Red | Piece.Pawn;
-            grid[6, 5] = Piece.Red | Piece.Pawn;
-            grid[1, 6] = Piece.Red | Piece.Pawn;
-            grid[3, 6] = Piece.Red | Piece.Pawn;
-            grid[5, 6] = Piece.Red | Piece.Pawn;
-            grid[7, 6] = Piece.Red | Piece.Pawn;
-            grid[0, 7] = Piece.Red | Piece.Pawn;
-            grid[2, 7] = Piece.Red | Piece.Pawn;
-            grid[4, 7] = Piece.Red | Piece.Pawn;
-            grid[6, 7] = Piece.Red | Piece.Pawn;
-            
-            return grid;
+            SetUpPiece(0, 5, Piece.Red | Piece.Pawn);
+            SetUpPiece(2, 5, Piece.Red | Piece.Pawn);
+            SetUpPiece(4, 5, Piece.Red | Piece.Pawn);
+            SetUpPiece(6, 5, Piece.Red | Piece.Pawn);
+            SetUpPiece(1, 6, Piece.Red | Piece.Pawn);
+            SetUpPiece(3, 6, Piece.Red | Piece.Pawn);
+            SetUpPiece(5, 6, Piece.Red | Piece.Pawn);
+            SetUpPiece(7, 6, Piece.Red | Piece.Pawn);
+            SetUpPiece(0, 7, Piece.Red | Piece.Pawn);
+            SetUpPiece(2, 7, Piece.Red | Piece.Pawn);
+            SetUpPiece(4, 7, Piece.Red | Piece.Pawn);
+            SetUpPiece(6, 7, Piece.Red | Piece.Pawn);
         }
 
         public void PrintBoard()
@@ -144,9 +166,9 @@ namespace LoveCheckers.Models
         }
 
         // will need this later
-        public List<Pair<int, Point>> GetPiecesOfColor(int color)
+        public List<Pair> GetPiecesOfColor(int color)
         {
-            List<Pair<int, Point>> answer = new List<Pair<int, Point>>();
+            List<Pair> answer = new List<Pair>();
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
@@ -154,11 +176,17 @@ namespace LoveCheckers.Models
                     int piece = Grid[x, y];
                     if (Piece.GetColor(piece) == color)
                     {
-                        answer.Add(new Pair<int, Point>(piece, new Point(x, y)));
+                        answer.Add(new Pair(piece, new Point(x, y)));
                     }
                 }
             }
             return answer;
+        }
+
+        public void UpdatePositions()
+        {
+            RedPieces = GetPiecesOfColor(Piece.Red);
+            BlackPieces = GetPiecesOfColor(Piece.Black);
         }
 
     }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using LoveCheckers.Commands;
+﻿using LoveCheckers.Commands;
+using System.Collections.Generic;
 
 namespace LoveCheckers.Models
 {
@@ -7,16 +7,19 @@ namespace LoveCheckers.Models
     {
         public int Color { get; }
         public bool MoveReady { get; set; }
-
+        public List<Move> SuggestedJumps { get; set; }
+        
         protected int SelectedPiece { get; set; }
         protected bool Jump { get; set; }
         protected MoveGenerator MoveGen { get; set; }
         protected Board Board { get; }
+        
 
         public Player(int color, Board board)
         {
             Color = color;
             Board = board;
+            SuggestedJumps = new List<Move>();
         }
 
         public abstract MoveCommand GetMove();
@@ -28,6 +31,12 @@ namespace LoveCheckers.Models
             MoveGen = new MoveGenerator(Board, SelectedPiece, move.Destination);
             MoveReady = false; // reset this
             Jump = true;
+        }
+
+        public void SuggestJumps(List<Move> moves)
+        {
+            SuggestedJumps = moves;
+            Board.MoreHighlights = moves;
         }
     }
 }

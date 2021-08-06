@@ -1,4 +1,5 @@
-﻿using Love;
+﻿using System.Linq;
+using Love;
 using LoveCheckers.Commands;
 
 namespace LoveCheckers.Models
@@ -34,11 +35,20 @@ namespace LoveCheckers.Models
                 if (Board.WithinBounds(mouseX, mouseY)) // if we clicked on the board somewhere
                 {
                     Point clicked = Board.GetPointAt(mouseX, mouseY); // the point we clicked on the board
+                    
                     if (SelectedPiece == Piece.Nothing) // if we don't have a piece selected yet
                     {
                         int piece = Board.GetPieceAtPoint(clicked);
                         if (piece == Piece.Nothing) { return; } // if we didn't click on a piece, don't do anything
                         if (Piece.GetColor(piece) != Color) { return; } // can't click on a piece that isn't ours!
+
+                        if (SuggestedJumps.Count > 0) // if we have suggested jumps, we have to make sure where we clicked is one of them
+                        {
+                            if (!SuggestedJumps.Any((move => move.Origin == clicked))) // 
+                            {
+                                return;
+                            }
+                        }
                         SelectedPiece = piece;
                         MoveGen = new MoveGenerator(Board, SelectedPiece, clicked);
                         if (!MoveGen.HasMoves()) // if the piece we clicked doesn't have anywhere to go

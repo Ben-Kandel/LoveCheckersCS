@@ -71,6 +71,11 @@ namespace LoveCheckers.Models
             // return true if any of our valid moves is a jump move
             return ValidMoves.Any(m => m.IsJump);
         }
+
+        public List<Move> GetJumps()
+        {
+            return ValidMoves.FindAll(m => m.IsJump);
+        }
         
         private void GenerateValidMoves()
         {

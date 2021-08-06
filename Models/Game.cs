@@ -36,16 +36,22 @@ namespace LoveCheckers.Models
             ActivePlayer.MoveReady = false;
             ActivePlayer = (ActivePlayer == Player1) ? Player2 : Player1;
             Board.ClearHighlightedMoves();
+            List<Move> suggestedMoves = Board.GetPiecesOfColor(ActivePlayer.Color).SelectMany(pair =>
+            {
+                MoveGenerator gen = new MoveGenerator(Board, pair.Piece, pair.Pos, false);
+                return gen.GetJumps();
+            }).ToList();
+            ActivePlayer.SuggestJumps(suggestedMoves);
         }
 
         public bool GameOver()
         {
-            List<Pair<int, Point>> pieces = Board.GetPiecesOfColor(ActivePlayer.Color);
+            List<Pair> pieces = Board.GetPiecesOfColor(ActivePlayer.Color);
             // a player loses when they have no available moves (either lost all pieces, or all pieces blocked in)
             // return false if any of the player's pieces have a move
             return !pieces.Any(pair =>
             {
-                MoveGenerator gen = new MoveGenerator(Board, pair.First, pair.Second, false);
+                MoveGenerator gen = new MoveGenerator(Board, pair.Piece, pair.Pos, false);
                 return gen.HasMoves();
             });
         }
@@ -68,14 +74,9 @@ namespace LoveCheckers.Models
                 MoveCommand move = ActivePlayer.GetMove();
                 Move theMove = move.Move;
                 ExecuteMove(move);
-                if (theMove.IsPromotion)
-                {
-                    Console.WriteLine("hey this was a promotion!");
-                }
-                if ((theMove.IsPromotion || theMove.IsJump) && CheckForNextJump(theMove)) 
+                if (theMove.IsJump && CheckForNextJump(theMove)) 
                 {
                     // we need to force this player to take that available jump
-                    Console.WriteLine("There is an available jump for this player.");
                     ActivePlayer.ForceJump(theMove);
                 }
                 else
@@ -88,7 +89,6 @@ namespace LoveCheckers.Models
         private bool CheckForNextJump(Move m)
         {
             MoveGenerator gen = new MoveGenerator(Board, m.Piece, m.Destination);
-            // Console.WriteLine($"checking for jump at point {m.Destination}");
             return gen.HasJump();
         }
 

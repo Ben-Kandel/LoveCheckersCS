@@ -2,7 +2,7 @@
 {
     public class Move
     {
-        public int Piece { get; set; }
+        public int Piece { get; }
         public Point Origin { get; }
         public Point Destination { get; }
         public bool IsJump { get; }

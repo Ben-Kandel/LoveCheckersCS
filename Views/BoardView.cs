@@ -1,4 +1,5 @@
-﻿using LoveCheckers.Models;
+﻿using System;
+using LoveCheckers.Models;
 using Love;
 using Point = LoveCheckers.Models.Point;
 
@@ -11,7 +12,8 @@ namespace LoveCheckers.Views
 
         private static Color DefaultHighlight = new Color(181f / 255, 179f / 255, 147f/ 255, 1);
         private static Color MoveHighlight = new Color(0, 0.7f, 0.3f, 1);
-
+        private static Color PieceHighlight = new Color(66f /255, 122f / 255, 168f / 255, 1);
+        
         private static Image BlackPawn = Graphics.NewImage("../../../Images/black_pawn.png");
         private static Image BlackKing = Graphics.NewImage("../../../Images/black_king.png");
         private static Image RedPawn = Graphics.NewImage("../../../Images/red_pawn.png");
@@ -25,6 +27,7 @@ namespace LoveCheckers.Views
 
         public void Draw()
         {
+            DrawSuggestedJumps();
             DrawMouseHighlight();
             for (int y = 0; y < 8; y++)
             {
@@ -44,9 +47,17 @@ namespace LoveCheckers.Views
                 }
             }
             DrawMoveHighlights();
-        } 
-        
-       private void DrawHighlight(Point p, Color c)
+        }
+
+        private void DrawSuggestedJumps()
+        {
+            foreach(Move move in Board.MoreHighlights)
+            {
+                DrawHighlight(move.Origin, PieceHighlight);
+            }
+        }
+
+        private void DrawHighlight(Point p, Color c)
        {
            int x = Board.X + (Board.TileSize * p.X) + 1;
            int y = Board.Y + (Board.TileSize * p.Y) + 1;
