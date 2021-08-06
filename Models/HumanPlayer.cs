@@ -6,23 +6,10 @@ namespace LoveCheckers.Models
 {
     public class HumanPlayer : Player
     {
-        private MoveCommand MoveCmd;
-
+        
         public HumanPlayer(int color, Board board) : base(color, board)
         {
             
-        }
-
-        public override MoveCommand GetMove()
-        {
-            return MoveCmd;
-        }
-
-        private void CreateMove(Move move)
-        {
-            MoveCmd = new MoveCommand(Board, move);
-            MoveReady = true;
-            Jump = false;
         }
 
         public override void Update(float dt)
@@ -60,7 +47,8 @@ namespace LoveCheckers.Models
                     {
                         if (MoveGen.IsValidMove(clicked)) // if the move was valid
                         {
-                            CreateMove(MoveGen.GetMoveFromDestination(clicked));
+                            // CreateMove(MoveGen.GetMoveFromDestination(clicked));
+                            ReadyUp(MoveGen.GetMoveFromDestination(clicked));
                         }
                         if (!Jump)
                         {

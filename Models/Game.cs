@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LoveCheckers.Commands;
 using LoveCheckers.Views;
@@ -23,7 +22,8 @@ namespace LoveCheckers.Models
             Board = new Board();
             BView = new BoardView(Board);
             Player1 = new HumanPlayer(Piece.Red, Board);
-            Player2 = new HumanPlayer(Piece.Black, Board);
+            // Player2 = new HumanPlayer(Piece.Black, Board);
+            Player2 = new AIPlayer(Piece.Black, Board);
             ActivePlayer = Player1;
             GameHistory = new List<ICommand>();
             HistoryIndex = -1;
@@ -39,7 +39,7 @@ namespace LoveCheckers.Models
             List<Move> suggestedMoves = Board.GetPiecesOfColor(ActivePlayer.Color).SelectMany(pair =>
             {
                 MoveGenerator gen = new MoveGenerator(Board, pair.Piece, pair.Pos, false);
-                return gen.GetJumps();
+                return gen.GetJumps(); // actually, this might not be necessary. The generator will filter out any non-jumps
             }).ToList();
             ActivePlayer.SuggestJumps(suggestedMoves);
         }
@@ -71,13 +71,14 @@ namespace LoveCheckers.Models
             // this is where we wait for a player to...play their turn
             if (ActivePlayer.MoveReady)
             {
-                MoveCommand move = ActivePlayer.GetMove();
-                Move theMove = move.Move;
-                ExecuteMove(move);
-                if (theMove.IsJump && CheckForNextJump(theMove)) 
+                MoveCommand moveCmd = ActivePlayer.MoveCmd;
+                Move move = moveCmd.Move;
+                ExecuteMove(moveCmd);
+                ActivePlayer.SuggestJumps(new List<Move>()); // clear the previous markers
+                if (move.IsJump && CheckForNextJump(move)) 
                 {
                     // we need to force this player to take that available jump
-                    ActivePlayer.ForceJump(theMove);
+                    ActivePlayer.ForceJump(move);
                 }
                 else
                 {

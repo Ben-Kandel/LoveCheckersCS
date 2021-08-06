@@ -12,7 +12,7 @@ namespace LoveCheckers.Views
 
         private static Color DefaultHighlight = new Color(181f / 255, 179f / 255, 147f/ 255, 1);
         private static Color MoveHighlight = new Color(0, 0.7f, 0.3f, 1);
-        private static Color PieceHighlight = new Color(66f /255, 122f / 255, 168f / 255, 1);
+        private static Color PieceHighlight = new Color(87f / 255, 148f / 255, 37f / 255, 1);
         
         private static Image BlackPawn = Graphics.NewImage("../../../Images/black_pawn.png");
         private static Image BlackKing = Graphics.NewImage("../../../Images/black_king.png");
@@ -27,6 +27,8 @@ namespace LoveCheckers.Views
 
         public void Draw()
         {
+            // the drawing order matters. for example, we want to draw the mousehighlight before we draw the piece,
+            // otherwise when we mouse over a piece, the highlight will cover it up.
             DrawSuggestedJumps();
             DrawMouseHighlight();
             for (int y = 0; y < 8; y++)
