@@ -53,9 +53,12 @@ namespace LoveCheckers.Models
                 MoveGenerator gen = new MoveGenerator(Board, pair.Piece, pair.Pos, false);
                 return gen.ValidMoves;
             }).ToList();
+            if (moves.Any(move => move.IsJump))
+            {
+                moves.RemoveAll(move => !move.IsJump);
+            }
             return moves;
         }
-        
-        
+
     }
 }
