@@ -27,6 +27,18 @@ namespace LoveCheckers.Models
             InitializeBoard();
         }
         
+        // actually i dont think i can use this. need to refactor InitializeBoard()
+        public Board(int[,] grid)
+        {
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    SetUpPiece(x, y, grid[x, y]);
+                }
+            }
+        }
+        
         private void SetUpPiece(int x, int y, int piece)
         {
             Grid[x, y] = piece;
@@ -128,7 +140,7 @@ namespace LoveCheckers.Models
         public bool SquareOccupiedByEnemy(Point pos, int friendlyColor)
         {
             int piece = Grid[pos.X, pos.Y];
-            return Piece.GetColor(piece) != friendlyColor;
+            return piece != Piece.Nothing && Piece.GetColor(piece) != friendlyColor;
         }
 
         public bool IsValidPoint(Point p)
@@ -149,7 +161,7 @@ namespace LoveCheckers.Models
         public static bool CanPromote(int piece, Point pos)
         {
             int color = Piece.GetColor(piece);
-            return (color == Piece.Red && pos.Y == 0) || (color == Piece.Black && pos.Y == 7);
+            return Piece.GetType(piece) == Piece.Pawn && ((color == Piece.Red && pos.Y == 0) || (color == Piece.Black && pos.Y == 7));
         }
 
         // will need this later
@@ -176,5 +188,18 @@ namespace LoveCheckers.Models
             BlackPieces = GetPiecesOfColor(Piece.Black);
         }
 
+        public Board Clone()
+        {
+            Board newBoard = new Board();
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    newBoard.Grid[x, y] = Grid[x, y];
+                }
+            }
+            newBoard.UpdatePositions();
+            return newBoard;
+        }
     }
 }

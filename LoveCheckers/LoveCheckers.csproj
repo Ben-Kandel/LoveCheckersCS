@@ -9,8 +9,4 @@
       <PackageReference Include="Love2dCS" Version="11.0.50" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers" />
-    </ItemGroup>
-
 </Project>

@@ -98,7 +98,7 @@ namespace LoveCheckers.Models
             // TODO: Implement Undo() functions in the command interface, and also an undo button in the GUI
             GameHistory.Add(move);
             HistoryIndex += 1;
-            move.Execute();
+            Board newBoard = move.Execute(); // fix this stuff
         }
         
     }

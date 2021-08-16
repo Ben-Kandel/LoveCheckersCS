@@ -5,6 +5,7 @@ namespace LoveCheckers.Commands
     public class MoveCommand : ICommand
     {
         private Board Board;
+        private Board PrevBoard;
         public Move Move { get; }
 
         public MoveCommand(Board board, Move move)
@@ -13,9 +14,13 @@ namespace LoveCheckers.Commands
             Board = board;
         }
         
-        public void Execute()
+        public Board Execute()
         {
+            
+            // okay, so maybe Execute() should return a new Board? 
+            
             // remove the piece from the start point and place it at the end point
+            PrevBoard = Board;
             Board.Grid[Move.Origin.X, Move.Origin.Y] = Piece.Nothing;
             Board.Grid[Move.Destination.X, Move.Destination.Y] = Move.Piece;
             // if this was a jump, then there is a captured piece that we must get rid of
@@ -30,6 +35,12 @@ namespace LoveCheckers.Commands
                 Board.Grid[Move.Destination.X, Move.Destination.Y] = promotedPiece;
             }
             Board.UpdatePositions();
+            return new Board();
+        }
+
+        public void Undo()
+        {
+            Board = PrevBoard;
         }
     }
 }
